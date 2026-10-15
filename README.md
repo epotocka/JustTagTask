@@ -41,6 +41,18 @@ The latest test coverage report is in [`testCoverageReport/`](testCoverageReport
 
 \* JaCoCo, run by `./mvnw clean verify`, reports 96.2% branch coverage (102/106) for the same code.
 
+## Performance
+
+Measured on a generated 200 MB file with 2,736,500 rows, in the same format as the sample file.
+
+| Job | Work | Time | Throughput |
+|---|---|---|---|
+| Load (`loadFileJob`) | Copy the CSV into `canonical.ad_record` | 1 min 19.8 s | ~34,000 rows/s |
+| Operation (`rowOperationJob`) | Click-through rate per row: `clicks` / `impressions` | 28.1 s | ~97,000 rows/s |
+| Aggregation (`aggregationJob`) | Average revenue per advertiser: `AVG(revenue)` by `advertiserId`, 25 groups | 0.41 s | ~6.7 million rows/s |
+
+The aggregation runs as a single `INSERT … SELECT` inside Postgres, so it is much faster than the chunked jobs, which move every row through the application.
+
 ## Endpoints
 
 | Method | Path | Description |

@@ -34,3 +34,5 @@ build/
 
 data/
 docs/
+
+src/main/resources/sample_data/sample_ads_data_200mb.csv
