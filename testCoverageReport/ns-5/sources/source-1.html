@@ -1,0 +1,158 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CanonicalLoadController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: CanonicalLoadController (com.example.justtagtask.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CanonicalLoadController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.controller;
+&nbsp;
+&nbsp;import java.net.URI;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import com.example.justtagtask.dto.common.ExecutionView;
+&nbsp;import com.example.justtagtask.service.loading.CanonicalLoadService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/files/{fileId}/load&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;class CanonicalLoadController {
+&nbsp;
+&nbsp;    private final CanonicalLoadService canonicalLoadService;
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    ResponseEntity&lt;Void&gt; start(@PathVariable UUID fileId) {
+<b class="fc">&nbsp;        canonicalLoadService.start(fileId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.accepted().location(statusLocation(fileId)).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/stop&quot;)
+&nbsp;    ResponseEntity&lt;Void&gt; stop(@PathVariable UUID fileId) {
+<b class="fc">&nbsp;        canonicalLoadService.stop(fileId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.accepted().location(statusLocation(fileId)).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/restart&quot;)
+&nbsp;    ResponseEntity&lt;Void&gt; restart(@PathVariable UUID fileId) {
+<b class="fc">&nbsp;        canonicalLoadService.restart(fileId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.accepted().location(statusLocation(fileId)).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    ExecutionView status(@PathVariable UUID fileId) {
+<b class="fc">&nbsp;        return canonicalLoadService.status(fileId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static URI statusLocation(UUID fileId) {
+<b class="fc">&nbsp;        return ServletUriComponentsBuilder.fromCurrentContextPath()</b>
+<b class="fc">&nbsp;                .path(&quot;/api/files/{fileId}/load&quot;)</b>
+<b class="fc">&nbsp;                .buildAndExpand(fileId)</b>
+<b class="fc">&nbsp;                .toUri();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

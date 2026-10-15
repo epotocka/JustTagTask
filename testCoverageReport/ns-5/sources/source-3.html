@@ -1,0 +1,161 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProcessingController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ProcessingController (com.example.justtagtask.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProcessingController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.controller;
+&nbsp;
+&nbsp;import java.net.URI;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import com.example.justtagtask.dto.processing.ProcessingRequest;
+&nbsp;import com.example.justtagtask.dto.processing.ProcessingSummary;
+&nbsp;import com.example.justtagtask.dto.processing.ProcessingView;
+&nbsp;import com.example.justtagtask.service.processing.ProcessingService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/files/{fileId}/process&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;class ProcessingController {
+&nbsp;
+&nbsp;    private final ProcessingService processingService;
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    ResponseEntity&lt;ProcessingSummary&gt; start(@PathVariable UUID fileId, @RequestBody ProcessingRequest request) {
+<b class="fc">&nbsp;        ProcessingSummary run = processingService.start(fileId, request);</b>
+<b class="fc">&nbsp;        return ResponseEntity.accepted().location(runLocation(fileId, run.runId())).body(run);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{runId}/stop&quot;)
+&nbsp;    ResponseEntity&lt;Void&gt; stop(@PathVariable UUID fileId, @PathVariable UUID runId) {
+<b class="fc">&nbsp;        processingService.stop(fileId, runId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.accepted().location(runLocation(fileId, runId)).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{runId}/restart&quot;)
+&nbsp;    ResponseEntity&lt;Void&gt; restart(@PathVariable UUID fileId, @PathVariable UUID runId) {
+<b class="fc">&nbsp;        processingService.restart(fileId, runId);</b>
+<b class="fc">&nbsp;        return ResponseEntity.accepted().location(runLocation(fileId, runId)).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{runId}&quot;)
+&nbsp;    ProcessingView view(@PathVariable UUID fileId, @PathVariable UUID runId) {
+<b class="fc">&nbsp;        return processingService.view(fileId, runId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static URI runLocation(UUID fileId, UUID runId) {
+<b class="fc">&nbsp;        return ServletUriComponentsBuilder.fromCurrentContextPath()</b>
+<b class="fc">&nbsp;                .path(&quot;/api/files/{fileId}/process/{runId}&quot;)</b>
+<b class="fc">&nbsp;                .buildAndExpand(fileId, runId)</b>
+<b class="fc">&nbsp;                .toUri();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

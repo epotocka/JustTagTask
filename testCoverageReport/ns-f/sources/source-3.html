@@ -1,0 +1,158 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProcessingRun</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.model.processing</a>
+</div>
+
+<h1>Coverage Summary for Class: ProcessingRun (com.example.justtagtask.model.processing)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProcessingRun</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.model.processing;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import com.example.justtagtask.model.processing.enums.RunStatus;
+&nbsp;import com.example.justtagtask.model.processing.enums.RunType;
+&nbsp;import org.springframework.data.annotation.Id;
+&nbsp;import org.springframework.data.relational.core.mapping.Embedded;
+&nbsp;import org.springframework.data.relational.core.mapping.Table;
+&nbsp;
+<b class="fc">&nbsp;@Table(&quot;processing_run&quot;)</b>
+<b class="fc">&nbsp;public record ProcessingRun(</b>
+&nbsp;        @Id UUID id,
+&nbsp;        UUID fileId,
+&nbsp;        RunType type,
+&nbsp;        @Embedded.Nullable RowOperation rowOperation,
+&nbsp;        @Embedded.Nullable Aggregation aggregation,
+&nbsp;        RunStatus status,
+&nbsp;        String resultTable,
+&nbsp;        Instant createdAt,
+&nbsp;        Instant updatedAt) {
+&nbsp;
+&nbsp;    public static ProcessingRun starting(UUID id, UUID fileId, RunDefinition definition, String resultTable) {
+<b class="fc">&nbsp;        Instant now = Instant.now();</b>
+<b class="fc">&nbsp;        return new ProcessingRun(</b>
+&nbsp;                id,
+&nbsp;                fileId,
+<b class="fc">&nbsp;                definition.type(),</b>
+<b class="fc">&nbsp;                definition instanceof RowOperation rowOperation ? rowOperation : null,</b>
+<b class="fc">&nbsp;                definition instanceof Aggregation aggregation ? aggregation : null,</b>
+&nbsp;                RunStatus.STARTING,
+&nbsp;                resultTable,
+&nbsp;                now,
+&nbsp;                now);
+&nbsp;    }
+&nbsp;
+&nbsp;    public RunDefinition definition() {
+<b class="fc">&nbsp;        return rowOperation != null ? rowOperation : aggregation;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

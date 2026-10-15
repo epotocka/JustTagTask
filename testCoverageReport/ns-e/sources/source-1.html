@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AdColumn</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.model.canonical.enums</a>
+</div>
+
+<h1>Coverage Summary for Class: AdColumn (com.example.justtagtask.model.canonical.enums)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdColumn</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (21/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.model.canonical.enums;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonValue;
+&nbsp;
+<b class="fc">&nbsp;public enum AdColumn {</b>
+&nbsp;
+<b class="fc">&nbsp;    ADVERTISER_ID(&quot;advertiserId&quot;, &quot;advertiser_id&quot;, &quot;BIGINT&quot;, false),</b>
+<b class="fc">&nbsp;    CAMPAIGN_ID(&quot;campaignId&quot;, &quot;campaign_id&quot;, &quot;BIGINT&quot;, false),</b>
+<b class="fc">&nbsp;    CREATIVE_ID(&quot;creativeId&quot;, &quot;creative_id&quot;, &quot;BIGINT&quot;, false),</b>
+<b class="fc">&nbsp;    AD_BOX_UUID(&quot;adBoxUUID&quot;, &quot;ad_box_uuid&quot;, &quot;UUID&quot;, false),</b>
+<b class="fc">&nbsp;    IMPRESSIONS(&quot;impressions&quot;, &quot;impressions&quot;, &quot;BIGINT&quot;, true),</b>
+<b class="fc">&nbsp;    CLICKS(&quot;clicks&quot;, &quot;clicks&quot;, &quot;BIGINT&quot;, true),</b>
+<b class="fc">&nbsp;    REVENUE(&quot;revenue&quot;, &quot;revenue&quot;, &quot;NUMERIC(19, 4)&quot;, true),</b>
+<b class="fc">&nbsp;    ADVERTISER_MARGIN(&quot;advertiserMargin&quot;, &quot;advertiser_margin&quot;, &quot;NUMERIC(19, 4)&quot;, true);</b>
+&nbsp;
+&nbsp;    public static final String CSV_DELIMITER = &quot;;&quot;;
+&nbsp;
+&nbsp;    private final String header;
+&nbsp;    private final String columnName;
+&nbsp;    private final String sqlType;
+&nbsp;    private final boolean measure;
+&nbsp;
+<b class="fc">&nbsp;    AdColumn(String header, String columnName, String sqlType, boolean measure) {</b>
+<b class="fc">&nbsp;        this.header = header;</b>
+<b class="fc">&nbsp;        this.columnName = columnName;</b>
+<b class="fc">&nbsp;        this.sqlType = sqlType;</b>
+<b class="fc">&nbsp;        this.measure = measure;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static Optional&lt;AdColumn&gt; fromHeader(String header) {
+<b class="fc">&nbsp;        return Arrays.stream(values()).filter(column -&gt; column.header.equals(header)).findFirst();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static List&lt;AdColumn&gt; measures() {
+<b class="fc">&nbsp;        return Arrays.stream(values()).filter(AdColumn::isMeasure).toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static String csvHeader() {
+<b class="fc">&nbsp;        return Arrays.stream(values()).map(AdColumn::header).collect(Collectors.joining(CSV_DELIMITER));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @JsonValue
+&nbsp;    public String header() {
+<b class="fc">&nbsp;        return header;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String columnName() {
+<b class="fc">&nbsp;        return columnName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String sqlType() {
+<b class="fc">&nbsp;        return sqlType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isMeasure() {
+<b class="fc">&nbsp;        return measure;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

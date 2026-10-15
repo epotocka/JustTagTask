@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: JustTagTask
+  threads:
+    virtual:
+      enabled: true
+  servlet:
+    multipart:
+      enabled: false
+  datasource:
+    hikari:
+      schema: internal
+      data-source-properties:
+        reWriteBatchedInserts: true
+  flyway:
+    schemas: internal
+    default-schema: internal
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: never
+
+server:
+  tomcat:
+    connection-timeout: 60s
+
+ingestion:
+  storage-directory: data/uploads
+  max-file-size: 5GB
+  progress-save-interval: 5s
+  chunk-size: 2000
+  skip-limit: 100

@@ -1,0 +1,181 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AdRecordLineMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.service.loading</a>
+</div>
+
+<h1>Coverage Summary for Class: AdRecordLineMapper (com.example.justtagtask.service.loading)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdRecordLineMapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.service.loading;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import com.example.justtagtask.model.canonical.AdRecord;
+&nbsp;import com.example.justtagtask.model.canonical.enums.AdColumn;
+&nbsp;import org.springframework.batch.infrastructure.item.file.LineMapper;
+&nbsp;import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
+&nbsp;import org.springframework.batch.infrastructure.item.file.transform.FieldSet;
+&nbsp;
+&nbsp;public final class AdRecordLineMapper implements LineMapper&lt;AdRecord&gt; {
+&nbsp;
+&nbsp;    private static final int HEADER_LINES = 1;
+&nbsp;    private static final String NULL_LITERAL = &quot;null&quot;;
+&nbsp;    private static final int MAX_DECIMAL_SCALE = 4;
+&nbsp;    private static final int MAX_DECIMAL_INTEGER_DIGITS = 15;
+&nbsp;
+&nbsp;    private final UUID fileId;
+<b class="fc">&nbsp;    private final DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(AdColumn.CSV_DELIMITER);</b>
+&nbsp;
+<b class="fc">&nbsp;    public AdRecordLineMapper(UUID fileId) {</b>
+<b class="fc">&nbsp;        this.fileId = fileId;</b>
+<b class="fc">&nbsp;        this.tokenizer.setNames(Arrays.stream(AdColumn.values()).map(AdColumn::header).toArray(String[]::new));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public AdRecord mapLine(String line, int lineNumber) {
+<b class="fc">&nbsp;        FieldSet fields = tokenizer.tokenize(line);</b>
+<b class="fc">&nbsp;        return new AdRecord(</b>
+&nbsp;                fileId,
+&nbsp;                lineNumber - HEADER_LINES,
+<b class="fc">&nbsp;                wholeNumber(fields, AdColumn.ADVERTISER_ID),</b>
+<b class="fc">&nbsp;                wholeNumber(fields, AdColumn.CAMPAIGN_ID),</b>
+<b class="fc">&nbsp;                wholeNumber(fields, AdColumn.CREATIVE_ID),</b>
+<b class="fc">&nbsp;                UUID.fromString(value(fields, AdColumn.AD_BOX_UUID)),</b>
+<b class="fc">&nbsp;                wholeNumber(fields, AdColumn.IMPRESSIONS),</b>
+<b class="fc">&nbsp;                wholeNumber(fields, AdColumn.CLICKS),</b>
+<b class="fc">&nbsp;                decimal(fields, AdColumn.REVENUE),</b>
+<b class="fc">&nbsp;                decimal(fields, AdColumn.ADVERTISER_MARGIN));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static String value(FieldSet fields, AdColumn column) {
+<b class="fc">&nbsp;        String value = fields.readString(column.header());</b>
+<b class="pc">&nbsp;        if (value == null || value.isBlank() || NULL_LITERAL.equalsIgnoreCase(value)) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(column.header() + &quot; has no value&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static long wholeNumber(FieldSet fields, AdColumn column) {
+<b class="fc">&nbsp;        return Long.parseLong(value(fields, column));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static BigDecimal decimal(FieldSet fields, AdColumn column) {
+<b class="fc">&nbsp;        BigDecimal decimal = new BigDecimal(value(fields, column));</b>
+<b class="fc">&nbsp;        BigDecimal significant = decimal.stripTrailingZeros();</b>
+<b class="fc">&nbsp;        if (significant.scale() &gt; MAX_DECIMAL_SCALE || significant.precision() - significant.scale() &gt; MAX_DECIMAL_INTEGER_DIGITS) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(column.header() + &quot; doesn&#39;t fit &quot; + column.sqlType() + &quot;: &quot; + decimal.toPlainString());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return decimal;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

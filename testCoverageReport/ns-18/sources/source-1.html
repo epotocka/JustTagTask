@@ -1,0 +1,194 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SqlUtils</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.util</a>
+</div>
+
+<h1>Coverage Summary for Class: SqlUtils (com.example.justtagtask.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SqlUtils</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.util;
+&nbsp;
+&nbsp;import com.example.justtagtask.model.processing.Aggregation;
+&nbsp;import com.example.justtagtask.model.processing.ResultTable;
+&nbsp;import com.example.justtagtask.model.processing.RowOperation;
+&nbsp;import com.example.justtagtask.model.processing.RunDefinition;
+&nbsp;
+&nbsp;public final class SqlUtils {
+&nbsp;
+&nbsp;    public static final String AD_RECORD_TABLE = &quot;canonical.ad_record&quot;;
+&nbsp;    public static final String FILE_ID_PARAMETER = &quot;fileId&quot;;
+&nbsp;    public static final String FILE_ID_FILTER = &quot;file_id = :&quot; + FILE_ID_PARAMETER;
+&nbsp;    public static final String ROW_NUMBER_COLUMN = &quot;row_number&quot;;
+&nbsp;    public static final String LEFT_OPERAND_COLUMN = &quot;left_operand&quot;;
+&nbsp;    public static final String RIGHT_OPERAND_COLUMN = &quot;right_operand&quot;;
+&nbsp;
+&nbsp;    public static final String INSERT_AD_RECORD = &quot;&quot;&quot;
+&nbsp;            INSERT INTO canonical.ad_record (
+&nbsp;                file_id, row_number, advertiser_id, campaign_id, creative_id,
+&nbsp;                ad_box_uuid, impressions, clicks, revenue, advertiser_margin)
+&nbsp;            VALUES (
+&nbsp;                :fileId, :rowNumber, :advertiserId, :campaignId, :creativeId,
+&nbsp;                :adBoxUuid, :impressions, :clicks, :revenue, :advertiserMargin)
+&nbsp;            ON CONFLICT (file_id, row_number) DO NOTHING
+&nbsp;            &quot;&quot;&quot;;
+&nbsp;
+&nbsp;    private static final String OPERAND_COLUMNS = &quot;row_number, %s AS left_operand, %s AS right_operand&quot;;
+&nbsp;
+&nbsp;    private static final String CREATE_ROW_OPERATION_RESULT_TABLE = &quot;&quot;&quot;
+&nbsp;            CREATE TABLE %s (row_number BIGINT PRIMARY KEY, result NUMERIC)
+&nbsp;            &quot;&quot;&quot;;
+&nbsp;
+&nbsp;    private static final String CREATE_AGGREGATION_RESULT_TABLE = &quot;&quot;&quot;
+&nbsp;            CREATE TABLE %s (group_value %s PRIMARY KEY, result NUMERIC)
+&nbsp;            &quot;&quot;&quot;;
+&nbsp;
+&nbsp;    private static final String INSERT_ROW_RESULT = &quot;&quot;&quot;
+&nbsp;            INSERT INTO %s (row_number, result)
+&nbsp;            VALUES (:rowNumber, :result)
+&nbsp;            ON CONFLICT (row_number) DO NOTHING
+&nbsp;            &quot;&quot;&quot;;
+&nbsp;
+&nbsp;    private static final String INSERT_AGGREGATION_RESULTS = &quot;&quot;&quot;
+&nbsp;            INSERT INTO %1$s (group_value, result)
+&nbsp;            SELECT %2$s, %3$s(%4$s)
+&nbsp;            FROM canonical.ad_record
+&nbsp;            WHERE file_id = ?
+&nbsp;            GROUP BY %2$s
+&nbsp;            ON CONFLICT (group_value) DO NOTHING
+&nbsp;            &quot;&quot;&quot;;
+&nbsp;
+&nbsp;    private SqlUtils() {
+&nbsp;    }
+&nbsp;
+&nbsp;    public static String operandColumns(RowOperation operation) {
+<b class="fc">&nbsp;        return OPERAND_COLUMNS.formatted(operation.leftColumn().columnName(), operation.rightColumn().columnName());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static String createResultTable(ResultTable table, RunDefinition definition) {
+<b class="pc">&nbsp;        return switch (definition) {</b>
+<b class="fc">&nbsp;            case RowOperation _ -&gt; CREATE_ROW_OPERATION_RESULT_TABLE.formatted(table.name());</b>
+<b class="fc">&nbsp;            case Aggregation aggregation -&gt; CREATE_AGGREGATION_RESULT_TABLE.formatted(table.name(), aggregation.groupBy().sqlType());</b>
+&nbsp;        };
+&nbsp;    }
+&nbsp;
+&nbsp;    public static String insertRowResult(ResultTable table) {
+<b class="fc">&nbsp;        return INSERT_ROW_RESULT.formatted(table.name());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static String insertAggregationResults(ResultTable table, Aggregation aggregation) {
+<b class="fc">&nbsp;        return INSERT_AGGREGATION_RESULTS.formatted(</b>
+<b class="fc">&nbsp;                table.name(),</b>
+<b class="fc">&nbsp;                aggregation.groupBy().columnName(),</b>
+<b class="fc">&nbsp;                aggregation.function().name(),</b>
+<b class="fc">&nbsp;                aggregation.valueColumn().columnName());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

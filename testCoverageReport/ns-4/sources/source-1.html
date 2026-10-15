@@ -1,0 +1,253 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProcessingJobConfiguration</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.config.processing</a>
+</div>
+
+<h1>Coverage Summary for Class: ProcessingJobConfiguration (com.example.justtagtask.config.processing)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProcessingJobConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProcessingJobConfiguration$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingJobConfiguration$$SpringCGLIB$$FastClass$$0</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingJobConfiguration$$SpringCGLIB$$FastClass$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.config.processing;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import javax.sql.DataSource;
+&nbsp;
+&nbsp;import com.example.justtagtask.config.common.IngestionProperties;
+&nbsp;import com.example.justtagtask.model.processing.OperandRow;
+&nbsp;import com.example.justtagtask.model.processing.ProcessingRun;
+&nbsp;import com.example.justtagtask.model.processing.ResultTable;
+&nbsp;import com.example.justtagtask.model.processing.RowResult;
+&nbsp;import com.example.justtagtask.model.processing.enums.Operation;
+&nbsp;import com.example.justtagtask.repository.processing.ProcessingRunRepository;
+&nbsp;import com.example.justtagtask.service.processing.AggregationTasklet;
+&nbsp;import com.example.justtagtask.service.processing.ProcessingJobListener;
+&nbsp;import com.example.justtagtask.service.processing.ProcessingJobParameters;
+&nbsp;import com.example.justtagtask.util.SqlUtils;
+&nbsp;import org.springframework.batch.core.configuration.annotation.StepScope;
+&nbsp;import org.springframework.batch.core.job.Job;
+&nbsp;import org.springframework.batch.core.job.builder.JobBuilder;
+&nbsp;import org.springframework.batch.core.repository.JobRepository;
+&nbsp;import org.springframework.batch.core.step.Step;
+&nbsp;import org.springframework.batch.core.step.builder.StepBuilder;
+&nbsp;import org.springframework.batch.infrastructure.item.ItemProcessor;
+&nbsp;import org.springframework.batch.infrastructure.item.database.JdbcBatchItemWriter;
+&nbsp;import org.springframework.batch.infrastructure.item.database.JdbcPagingItemReader;
+&nbsp;import org.springframework.batch.infrastructure.item.database.Order;
+&nbsp;import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchItemWriterBuilder;
+&nbsp;import org.springframework.batch.infrastructure.item.database.builder.JdbcPagingItemReaderBuilder;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.jdbc.core.JdbcTemplate;
+&nbsp;import org.springframework.jdbc.core.namedparam.SimplePropertySqlParameterSource;
+&nbsp;import org.springframework.transaction.PlatformTransactionManager;
+&nbsp;
+&nbsp;@Configuration
+<b class="fc">&nbsp;class ProcessingJobConfiguration {</b>
+&nbsp;
+&nbsp;    private static final String RUN_ID_PARAMETER = &quot;#{jobParameters[&#39;&quot; + ProcessingJobParameters.RUN_ID + &quot;&#39;]}&quot;;
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    Job rowOperationJob(
+&nbsp;            JobRepository jobRepository,
+&nbsp;            PlatformTransactionManager transactionManager,
+&nbsp;            JdbcPagingItemReader&lt;OperandRow&gt; operandReader,
+&nbsp;            ItemProcessor&lt;OperandRow, RowResult&gt; operationProcessor,
+&nbsp;            JdbcBatchItemWriter&lt;RowResult&gt; rowResultWriter,
+&nbsp;            ProcessingJobListener listener,
+&nbsp;            IngestionProperties properties) {
+<b class="fc">&nbsp;        Step rowOperationStep = new StepBuilder(ProcessingJobParameters.ROW_OPERATION_STEP, jobRepository)</b>
+<b class="fc">&nbsp;                .&lt;OperandRow, RowResult&gt;chunk(properties.chunkSize())</b>
+<b class="fc">&nbsp;                .transactionManager(transactionManager)</b>
+<b class="fc">&nbsp;                .reader(operandReader)</b>
+<b class="fc">&nbsp;                .processor(operationProcessor)</b>
+<b class="fc">&nbsp;                .writer(rowResultWriter)</b>
+<b class="fc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        return new JobBuilder(ProcessingJobParameters.ROW_OPERATION_JOB, jobRepository)</b>
+<b class="fc">&nbsp;                .listener(listener)</b>
+<b class="fc">&nbsp;                .start(rowOperationStep)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    Job aggregationJob(
+&nbsp;            JobRepository jobRepository,
+&nbsp;            PlatformTransactionManager transactionManager,
+&nbsp;            AggregationTasklet aggregationTasklet,
+&nbsp;            ProcessingJobListener listener) {
+<b class="fc">&nbsp;        Step aggregationStep = new StepBuilder(ProcessingJobParameters.AGGREGATION_STEP, jobRepository)</b>
+<b class="fc">&nbsp;                .tasklet(aggregationTasklet, transactionManager)</b>
+<b class="fc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        return new JobBuilder(ProcessingJobParameters.AGGREGATION_JOB, jobRepository)</b>
+<b class="fc">&nbsp;                .listener(listener)</b>
+<b class="fc">&nbsp;                .start(aggregationStep)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    @StepScope
+&nbsp;    JdbcPagingItemReader&lt;OperandRow&gt; operandReader(
+&nbsp;            @Value(RUN_ID_PARAMETER) String runId,
+&nbsp;            ProcessingRunRepository processingRunRepository,
+&nbsp;            DataSource dataSource,
+&nbsp;            IngestionProperties properties) throws Exception {
+<b class="fc">&nbsp;        ProcessingRun run = processingRunRepository.findById(UUID.fromString(runId)).orElseThrow();</b>
+<b class="fc">&nbsp;        return new JdbcPagingItemReaderBuilder&lt;OperandRow&gt;()</b>
+<b class="fc">&nbsp;                .name(&quot;operandReader&quot;)</b>
+<b class="fc">&nbsp;                .dataSource(dataSource)</b>
+<b class="fc">&nbsp;                .selectClause(SqlUtils.operandColumns(run.rowOperation()))</b>
+<b class="fc">&nbsp;                .fromClause(SqlUtils.AD_RECORD_TABLE)</b>
+<b class="fc">&nbsp;                .whereClause(SqlUtils.FILE_ID_FILTER)</b>
+<b class="fc">&nbsp;                .parameterValues(Map.of(SqlUtils.FILE_ID_PARAMETER, run.fileId()))</b>
+<b class="fc">&nbsp;                .sortKeys(Map.of(SqlUtils.ROW_NUMBER_COLUMN, Order.ASCENDING))</b>
+<b class="fc">&nbsp;                .pageSize(properties.chunkSize())</b>
+<b class="fc">&nbsp;                .rowMapper((resultSet, rowNumber) -&gt; new OperandRow(</b>
+<b class="fc">&nbsp;                        resultSet.getLong(SqlUtils.ROW_NUMBER_COLUMN),</b>
+<b class="fc">&nbsp;                        resultSet.getBigDecimal(SqlUtils.LEFT_OPERAND_COLUMN),</b>
+<b class="fc">&nbsp;                        resultSet.getBigDecimal(SqlUtils.RIGHT_OPERAND_COLUMN)))</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    @StepScope
+&nbsp;    ItemProcessor&lt;OperandRow, RowResult&gt; operationProcessor(
+&nbsp;            @Value(RUN_ID_PARAMETER) String runId,
+&nbsp;            ProcessingRunRepository processingRunRepository) {
+<b class="fc">&nbsp;        Operation operation = processingRunRepository.findById(UUID.fromString(runId)).orElseThrow().rowOperation().operation();</b>
+<b class="fc">&nbsp;        return row -&gt; new RowResult(row.rowNumber(), operation.apply(row.left(), row.right()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    @StepScope
+&nbsp;    JdbcBatchItemWriter&lt;RowResult&gt; rowResultWriter(@Value(RUN_ID_PARAMETER) String runId, DataSource dataSource) {
+<b class="fc">&nbsp;        return new JdbcBatchItemWriterBuilder&lt;RowResult&gt;()</b>
+<b class="fc">&nbsp;                .dataSource(dataSource)</b>
+<b class="fc">&nbsp;                .sql(SqlUtils.insertRowResult(new ResultTable(UUID.fromString(runId))))</b>
+<b class="fc">&nbsp;                .assertUpdates(false)</b>
+<b class="fc">&nbsp;                .itemSqlParameterSourceProvider(SimplePropertySqlParameterSource::new)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    @StepScope
+&nbsp;    AggregationTasklet aggregationTasklet(
+&nbsp;            @Value(RUN_ID_PARAMETER) String runId,
+&nbsp;            ProcessingRunRepository processingRunRepository,
+&nbsp;            JdbcTemplate jdbcTemplate) {
+<b class="fc">&nbsp;        return new AggregationTasklet(jdbcTemplate, processingRunRepository.findById(UUID.fromString(runId)).orElseThrow());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

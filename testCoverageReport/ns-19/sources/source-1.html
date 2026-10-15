@@ -1,0 +1,140 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UploadedFileRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.repository.upload</a>
+</div>
+
+<h1>Coverage Summary for Class: UploadedFileRepository (com.example.justtagtask.repository.upload)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">UploadedFileRepository$MockitoMock$ueesU4zX</td>
+  </tr>
+  <tr>
+    <td class="name">UploadedFileRepository$MockitoMock$ueesU4zX$auxiliary$poeN3pFJ</td>
+  </tr>
+  <tr>
+    <td class="name">UploadedFileRepository$MockitoMock$ueesU4zX$auxiliary$tbiaRCVq</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.repository.upload;
+&nbsp;
+&nbsp;import java.util.Collection;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import com.example.justtagtask.model.upload.UploadedFile;
+&nbsp;import com.example.justtagtask.model.upload.enums.FileStatus;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jdbc.repository.query.Modifying;
+&nbsp;import org.springframework.data.jdbc.repository.query.Query;
+&nbsp;import org.springframework.data.repository.ListCrudRepository;
+&nbsp;import org.springframework.data.repository.PagingAndSortingRepository;
+&nbsp;
+&nbsp;public interface UploadedFileRepository
+&nbsp;        extends ListCrudRepository&lt;UploadedFile, UUID&gt;, PagingAndSortingRepository&lt;UploadedFile, UUID&gt; {
+&nbsp;
+&nbsp;    Page&lt;UploadedFile&gt; findByStatus(FileStatus status, Pageable pageable);
+&nbsp;
+&nbsp;    List&lt;UploadedFile&gt; findAllByStatus(FileStatus status);
+&nbsp;
+&nbsp;    @Modifying
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;            UPDATE uploaded_file
+&nbsp;            SET bytes_received = :bytesReceived, row_count = :rowCount, updated_at = now()
+&nbsp;            WHERE id = :id
+&nbsp;            &quot;&quot;&quot;)
+&nbsp;    void updateProgress(UUID id, long bytesReceived, long rowCount);
+&nbsp;
+&nbsp;    @Modifying
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;            UPDATE uploaded_file
+&nbsp;            SET status = &#39;UPLOADED&#39;, bytes_received = :bytesReceived, row_count = :rowCount, updated_at = now()
+&nbsp;            WHERE id = :id
+&nbsp;            &quot;&quot;&quot;)
+&nbsp;    void finishUpload(UUID id, long bytesReceived, long rowCount);
+&nbsp;
+&nbsp;    @Modifying
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;            UPDATE uploaded_file
+&nbsp;            SET status = :to, failure_reason = NULL, updated_at = now()
+&nbsp;            WHERE id = :id AND status IN (:from)
+&nbsp;            &quot;&quot;&quot;)
+&nbsp;    boolean transition(UUID id, Collection&lt;FileStatus&gt; from, FileStatus to);
+&nbsp;
+&nbsp;    @Modifying
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;            UPDATE uploaded_file
+&nbsp;            SET status = :status, updated_at = now()
+&nbsp;            WHERE id = :id
+&nbsp;            &quot;&quot;&quot;)
+&nbsp;    void updateStatus(UUID id, FileStatus status);
+&nbsp;
+&nbsp;    @Modifying
+&nbsp;    @Query(&quot;&quot;&quot;
+&nbsp;            UPDATE uploaded_file
+&nbsp;            SET status = &#39;FAILED&#39;, failure_reason = :reason, updated_at = now()
+&nbsp;            WHERE id = :id
+&nbsp;            &quot;&quot;&quot;)
+&nbsp;    void markFailed(UUID id, String reason);
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

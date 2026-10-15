@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CanonicalLoadJobConfiguration</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.config.loading</a>
+</div>
+
+<h1>Coverage Summary for Class: CanonicalLoadJobConfiguration (com.example.justtagtask.config.loading)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CanonicalLoadJobConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (29/29)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CanonicalLoadJobConfiguration$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">CanonicalLoadJobConfiguration$$SpringCGLIB$$FastClass$$0</td>
+  </tr>
+  <tr>
+    <td class="name">CanonicalLoadJobConfiguration$$SpringCGLIB$$FastClass$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (29/29)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.config.loading;
+&nbsp;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import javax.sql.DataSource;
+&nbsp;
+&nbsp;import com.example.justtagtask.config.common.IngestionProperties;
+&nbsp;import com.example.justtagtask.model.canonical.AdRecord;
+&nbsp;import com.example.justtagtask.service.loading.AdRecordLineMapper;
+&nbsp;import com.example.justtagtask.service.loading.CanonicalLoadJobListener;
+&nbsp;import com.example.justtagtask.service.loading.CanonicalLoadJobParameters;
+&nbsp;import com.example.justtagtask.service.loading.MalformedLineLogger;
+&nbsp;import com.example.justtagtask.service.upload.FileStorage;
+&nbsp;import com.example.justtagtask.util.SqlUtils;
+&nbsp;import org.springframework.batch.core.configuration.annotation.StepScope;
+&nbsp;import org.springframework.batch.core.job.Job;
+&nbsp;import org.springframework.batch.core.job.builder.JobBuilder;
+&nbsp;import org.springframework.batch.core.repository.JobRepository;
+&nbsp;import org.springframework.batch.core.step.Step;
+&nbsp;import org.springframework.batch.core.step.builder.StepBuilder;
+&nbsp;import org.springframework.batch.infrastructure.item.database.JdbcBatchItemWriter;
+&nbsp;import org.springframework.batch.infrastructure.item.database.builder.JdbcBatchItemWriterBuilder;
+&nbsp;import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
+&nbsp;import org.springframework.batch.infrastructure.item.file.FlatFileParseException;
+&nbsp;import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.core.io.FileSystemResource;
+&nbsp;import org.springframework.jdbc.core.namedparam.SimplePropertySqlParameterSource;
+&nbsp;import org.springframework.transaction.PlatformTransactionManager;
+&nbsp;
+&nbsp;@Configuration
+<b class="fc">&nbsp;class CanonicalLoadJobConfiguration {</b>
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    Job loadFileJob(
+&nbsp;            JobRepository jobRepository,
+&nbsp;            PlatformTransactionManager transactionManager,
+&nbsp;            FlatFileItemReader&lt;AdRecord&gt; adRecordReader,
+&nbsp;            JdbcBatchItemWriter&lt;AdRecord&gt; adRecordWriter,
+&nbsp;            CanonicalLoadJobListener listener,
+&nbsp;            MalformedLineLogger malformedLineLogger,
+&nbsp;            IngestionProperties properties) {
+<b class="fc">&nbsp;        Step loadRecordsStep = new StepBuilder(CanonicalLoadJobParameters.STEP_NAME, jobRepository)</b>
+<b class="fc">&nbsp;                .&lt;AdRecord, AdRecord&gt;chunk(properties.chunkSize())</b>
+<b class="fc">&nbsp;                .transactionManager(transactionManager)</b>
+<b class="fc">&nbsp;                .reader(adRecordReader)</b>
+<b class="fc">&nbsp;                .writer(adRecordWriter)</b>
+<b class="fc">&nbsp;                .faultTolerant()</b>
+<b class="fc">&nbsp;                .skip(FlatFileParseException.class)</b>
+<b class="fc">&nbsp;                .skipLimit(properties.skipLimit())</b>
+<b class="fc">&nbsp;                .skipListener(malformedLineLogger)</b>
+<b class="fc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        return new JobBuilder(CanonicalLoadJobParameters.JOB_NAME, jobRepository)</b>
+<b class="fc">&nbsp;                .listener(listener)</b>
+<b class="fc">&nbsp;                .start(loadRecordsStep)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    @StepScope
+&nbsp;    FlatFileItemReader&lt;AdRecord&gt; adRecordReader(
+&nbsp;            @Value(&quot;#{jobParameters[&#39;&quot; + CanonicalLoadJobParameters.FILE_ID + &quot;&#39;]}&quot;) String fileId,
+&nbsp;            FileStorage storage) {
+<b class="fc">&nbsp;        UUID id = UUID.fromString(fileId);</b>
+<b class="fc">&nbsp;        return new FlatFileItemReaderBuilder&lt;AdRecord&gt;()</b>
+<b class="fc">&nbsp;                .name(&quot;adRecordReader&quot;)</b>
+<b class="fc">&nbsp;                .resource(new FileSystemResource(storage.pathFor(id)))</b>
+<b class="fc">&nbsp;                .linesToSkip(1)</b>
+<b class="fc">&nbsp;                .comments()</b>
+<b class="fc">&nbsp;                .lineMapper(new AdRecordLineMapper(id))</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    JdbcBatchItemWriter&lt;AdRecord&gt; adRecordWriter(DataSource dataSource) {
+<b class="fc">&nbsp;        return new JdbcBatchItemWriterBuilder&lt;AdRecord&gt;()</b>
+<b class="fc">&nbsp;                .dataSource(dataSource)</b>
+<b class="fc">&nbsp;                .sql(SqlUtils.INSERT_AD_RECORD)</b>
+<b class="fc">&nbsp;                .assertUpdates(false)</b>
+<b class="fc">&nbsp;                .itemSqlParameterSourceProvider(SimplePropertySqlParameterSource::new)</b>
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

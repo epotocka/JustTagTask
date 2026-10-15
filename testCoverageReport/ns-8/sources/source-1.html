@@ -1,0 +1,235 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProcessingRequest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.dto.processing</a>
+</div>
+
+<h1>Coverage Summary for Class: ProcessingRequest (com.example.justtagtask.dto.processing)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProcessingRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProcessingRequest$AggregationRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingRequest$OperationRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.dto.processing;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import com.example.justtagtask.exception.processing.InvalidProcessingRequestException;
+&nbsp;import com.example.justtagtask.model.canonical.enums.AdColumn;
+&nbsp;import com.example.justtagtask.model.processing.Aggregation;
+&nbsp;import com.example.justtagtask.model.processing.RowOperation;
+&nbsp;import com.example.justtagtask.model.processing.RunDefinition;
+&nbsp;import com.example.justtagtask.model.processing.enums.AggregateFunction;
+&nbsp;import com.example.justtagtask.model.processing.enums.Operation;
+&nbsp;import com.fasterxml.jackson.annotation.JsonSubTypes;
+&nbsp;import com.fasterxml.jackson.annotation.JsonTypeInfo;
+&nbsp;
+&nbsp;@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = &quot;type&quot;)
+&nbsp;@JsonSubTypes({
+&nbsp;        @JsonSubTypes.Type(value = ProcessingRequest.OperationRequest.class, name = &quot;OPERATION&quot;),
+&nbsp;        @JsonSubTypes.Type(value = ProcessingRequest.AggregationRequest.class, name = &quot;AGGREGATION&quot;)
+&nbsp;})
+&nbsp;public sealed interface ProcessingRequest {
+&nbsp;
+&nbsp;    RunDefinition toDefinition();
+&nbsp;
+<b class="fc">&nbsp;    record OperationRequest(String leftColumn, String rightColumn, Operation operation) implements ProcessingRequest {</b>
+&nbsp;
+&nbsp;        @Override
+&nbsp;        public RunDefinition toDefinition() {
+<b class="fc">&nbsp;            return new RowOperation(</b>
+<b class="fc">&nbsp;                    column(&quot;leftColumn&quot;, leftColumn, AdColumn.measures()),</b>
+<b class="fc">&nbsp;                    column(&quot;rightColumn&quot;, rightColumn, AdColumn.measures()),</b>
+<b class="fc">&nbsp;                    required(&quot;operation&quot;, operation));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    record AggregationRequest(String groupBy, String valueColumn, AggregateFunction function) implements ProcessingRequest {</b>
+&nbsp;
+&nbsp;        @Override
+&nbsp;        public RunDefinition toDefinition() {
+<b class="fc">&nbsp;            return new Aggregation(</b>
+<b class="fc">&nbsp;                    column(&quot;groupBy&quot;, groupBy, List.of(AdColumn.values())),</b>
+<b class="fc">&nbsp;                    column(&quot;valueColumn&quot;, valueColumn, AdColumn.measures()),</b>
+<b class="fc">&nbsp;                    required(&quot;function&quot;, function));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private static AdColumn column(String field, String header, List&lt;AdColumn&gt; allowed) {
+<b class="fc">&nbsp;        return AdColumn.fromHeader(header)</b>
+<b class="fc">&nbsp;                .filter(allowed::contains)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new InvalidProcessingRequestException(field + &quot; must be one of: &quot; + headers(allowed)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static &lt;T&gt; T required(String field, T value) {
+<b class="fc">&nbsp;        if (value == null) {</b>
+<b class="fc">&nbsp;            throw new InvalidProcessingRequestException(field + &quot; is required&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static String headers(List&lt;AdColumn&gt; columns) {
+<b class="fc">&nbsp;        return columns.stream().map(AdColumn::header).collect(Collectors.joining(&quot;, &quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>

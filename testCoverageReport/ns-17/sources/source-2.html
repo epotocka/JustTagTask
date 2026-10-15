@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > HeaderCheck</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.justtagtask.service.upload</a>
+</div>
+
+<h1>Coverage Summary for Class: HeaderCheck (com.example.justtagtask.service.upload)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HeaderCheck</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92,3%
+  </span>
+  <span class="absValue">
+    (12/13)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">HeaderCheck$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92,3%
+  </span>
+  <span class="absValue">
+    (12/13)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.justtagtask.service.upload;
+&nbsp;
+&nbsp;import java.io.BufferedReader;
+&nbsp;import java.io.InputStreamReader;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.UUID;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;
+&nbsp;import com.example.justtagtask.model.canonical.enums.AdColumn;
+&nbsp;import com.example.justtagtask.model.upload.enums.FileStatus;
+&nbsp;import com.example.justtagtask.repository.upload.UploadedFileRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.SneakyThrows;
+&nbsp;import org.springframework.scheduling.annotation.Async;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;@Component
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class HeaderCheck {
+&nbsp;
+&nbsp;    private static final String BYTE_ORDER_MARK = &quot;﻿&quot;;
+&nbsp;    private static final int MAX_HEADER_LENGTH = 1024;
+<b class="fc">&nbsp;    private static final Pattern CONTROL_CHARACTERS = Pattern.compile(&quot;\\p{Cntrl}&quot;);</b>
+&nbsp;    private static final String UNPRINTABLE_REPLACEMENT = &quot;?&quot;;
+&nbsp;
+&nbsp;    private final UploadedFileRepository uploadedFileRepository;
+&nbsp;    private final FileStorage fileStorage;
+&nbsp;
+&nbsp;    @Async
+&nbsp;    public void verify(UUID fileId) {
+<b class="fc">&nbsp;        String expected = AdColumn.csvHeader();</b>
+<b class="fc">&nbsp;        String actual = readHeader(fileStorage.pathFor(fileId));</b>
+<b class="fc">&nbsp;        if (columnNames(expected).equals(columnNames(actual))) {</b>
+<b class="fc">&nbsp;            uploadedFileRepository.transition(fileId, Set.of(FileStatus.UPLOADED), FileStatus.READY);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            uploadedFileRepository.markFailed(fileId, &quot;Expected the header &#39;&quot; + expected + &quot;&#39; but found &#39;&quot; + printable(actual) + &quot;&#39;&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    @SneakyThrows</b>
+&nbsp;    private static String readHeader(Path path) {
+<b class="fc">&nbsp;        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {</b>
+<b class="fc">&nbsp;            char[] buffer = new char[MAX_HEADER_LENGTH];</b>
+<b class="fc">&nbsp;            int read = Math.max(0, reader.read(buffer, 0, MAX_HEADER_LENGTH));</b>
+<b class="fc">&nbsp;            return String.valueOf(buffer, 0, read).replace(BYTE_ORDER_MARK, &quot;&quot;).lines().findFirst().orElse(&quot;&quot;).strip();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private static String printable(String header) {
+<b class="fc">&nbsp;        return CONTROL_CHARACTERS.matcher(header).replaceAll(UNPRINTABLE_REPLACEMENT);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static List&lt;String&gt; columnNames(String header) {
+<b class="fc">&nbsp;        return Arrays.stream(header.split(AdColumn.CSV_DELIMITER, -1)).map(String::strip).toList();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-10-15 20:10</div>
+</div>
+</body>
+</html>
